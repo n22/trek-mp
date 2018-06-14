@@ -25,12 +25,14 @@ func SaveNewProduct(c *gin.Context) {
 	priceBuy, errParse := strconv.ParseInt(c.PostForm("price_to_buy"), 10, 64)
 	if errParse != nil {
 		global.Error.Println(errParse)
+		global.BadRequestResponse(c, nil)
 		return
 	}
 
 	priceSell, errParse := strconv.ParseInt(c.PostForm("price_to_sell"), 10, 64)
 	if errParse != nil {
 		global.Error.Println(errParse)
+		global.BadRequestResponse(c, nil)
 		return
 	}
 
@@ -38,7 +40,9 @@ func SaveNewProduct(c *gin.Context) {
 	errSave := p.SaveNewData()
 	if errSave != nil {
 		global.Error.Println(errSave)
+		global.InternalServerErrorResponse(c, nil)
 		return
 	}
 
+	global.CreatedResponse(c, p)
 }
