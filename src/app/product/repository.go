@@ -2,8 +2,10 @@ package product
 
 import (
 	"context"
+	"fmt"
 	"time"
 
+	"github.com/5112100070/trek-mp/src/utils"
 	"github.com/tokopedia/sqlt"
 )
 
@@ -32,13 +34,13 @@ func (repo productRepo) Save(p Product) error {
 	defer cancel()
 
 	dbProduct := repo.DB
-	insertTalk, errPrepared := dbProduct.PreparexContext(ctx, query)
+	insertProduct, errPrepared := dbProduct.PreparexContext(ctx, query)
 	if errPrepared != nil {
 		return errPrepared
 	}
-	defer insertTalk.Close()
+	defer insertProduct.Close()
 
-	_, errInsert := insertTalk.ExecContext(ctx, p.Name, p.Status, p.Type, p.PriceBuy, p.PriceSell, p.CreateTime, p.ImgUrl, p.Domain)
+	_, errInsert := insertProduct.ExecContext(ctx, p.Name, p.Status, p.Type, p.PriceBuy, p.PriceSell, p.CreateTime, p.ImgUrl, p.Domain)
 	if errInsert != nil {
 		return errInsert
 	}
@@ -48,4 +50,70 @@ func (repo productRepo) Save(p Product) error {
 
 func (repo productRepo) GetProduct() {
 
+}
+
+func (repo productRepo) GetListProduct(start int, rows int, sortType string) ([]Product, error) {
+	if start < 0 || rows <= 0 {
+		start = 1
+		rows = 10
+	}
+	if sort(sortType) != SORT_ASC && sort(sortType) != SORT_DESC {
+		sortType = string(SORT_ASC)
+	}
+
+	query := fmt.Sprintf(`
+		SELECT 
+			product_id,
+			product_name,
+			price_to_buy,
+			price_to_sell,
+			status,
+			type,
+			create_time,
+			img_url,
+			domain_name
+		FROM ws_product
+		WHERE
+			status = 1 AND
+			type = 1
+		ORDER BY product_id %s	
+		LIMIT %v,%v		
+	`, sortType, start, rows)
+	ctx, cancel := context.WithTimeout(context.TODO(), repo.queryDBTimeout)
+	defer cancel()
+
+	dbProduct := repo.DB
+	selectProduct, errPrepared := dbProduct.PreparexContext(ctx, query)
+	if errPrepared != nil {
+		return nil, errPrepared
+	}
+	defer selectProduct.Close()
+
+	resultQuery, errQuery := selectProduct.QueryContext(ctx)
+	if errQuery != nil {
+		return nil, errQuery
+	}
+
+	var result []Product
+	for resultQuery.Next() {
+		var p Product
+		var rawTime time.Time
+		errScan := resultQuery.Scan(&p.ID,
+			&p.Name,
+			&p.PriceBuy,
+			&p.PriceSell,
+			&p.Status,
+			&p.Type,
+			&rawTime,
+			&p.ImgUrl,
+			&p.Domain)
+		if errScan != nil {
+			return nil, errScan
+		}
+
+		p.CreateTime = utils.ConvertTimeWIB(rawTime)
+		result = append(result, p)
+	}
+
+	return result, nil
 }

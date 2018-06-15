@@ -41,6 +41,7 @@ func main() {
 
 	r := gin.Default()
 	r.GET("/ping", app.Ping)
+	r.GET("/product", app.GetProductPage)
 	r.GET("/product/detail", app.GetDetailProduct)
 
 	r.POST("/product/save", app.SaveNewProduct)

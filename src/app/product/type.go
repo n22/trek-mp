@@ -6,6 +6,13 @@ import (
 	"github.com/tokopedia/sqlt"
 )
 
+type sort string
+
+const (
+	SORT_ASC  sort = "ASC"
+	SORT_DESC sort = "DESC"
+)
+
 type Product struct {
 	ID         int64     `json:"product_id"`
 	Name       string    `json:"product_name"`

@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/5112100070/trek-mp/src/app"
 	"github.com/5112100070/trek-mp/src/conf"
 	"github.com/5112100070/trek-mp/src/global"
-	"github.com/5112100070/trek-mp/src/product"
 	"github.com/gin-gonic/gin"
 )
 
@@ -32,18 +32,18 @@ func init() {
 		log.Fatal("Could not find configuration file")
 	}
 
-	global.DB = conf.InitDB(config)
-	global.InitDefaultQueryTimeOut(config.DBConfig.QueryTimeout)
-
-	product.InitProductService(global.DB.Product)
+	db := conf.InitDB(config)
+	queryTimeout := global.InitDefaultQueryTimeOut(config.DBConfig.QueryTimeout)
+	global.InitRepoBundle(db, queryTimeout)
 }
 
 func main() {
 
 	r := gin.Default()
-	r.GET("/ping", product.Ping)
-	r.GET("/product/detail", product.GetDetailProduct)
+	r.GET("/ping", app.Ping)
+	r.GET("/product", app.GetProductPage)
+	r.GET("/product/detail", app.GetDetailProduct)
 
-	r.POST("/product/save", product.SaveNewProduct)
+	r.POST("/product/save", app.SaveNewProduct)
 	r.Run(":3000") // listen and serve on 0.0.0.0:8080
 }

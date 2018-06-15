@@ -28,7 +28,7 @@ func BadRequestResponse(c *gin.Context, val interface{}) {
 
 func InternalServerErrorResponse(c *gin.Context, val interface{}) {
 	header := gin.H{
-		"server_message": "Bad Request",
+		"server_message": "Internal Server Error",
 		"data":           val,
 	}
 	sendResponse(c, 500, header)

@@ -17,4 +17,5 @@ type RepoBundle struct {
 type ProductService interface {
 	Save(p product.Product) error
 	GetProduct()
+	GetListProduct(start int, rows int, sortType string) ([]product.Product, error)
 }
