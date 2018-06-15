@@ -4,15 +4,17 @@ import (
 	"database/sql"
 	"log"
 	"time"
+
+	"github.com/5112100070/trek-mp/src/global"
 )
 
-func InitDB(c Config) DBBundle {
+func InitDB(c Config) global.DBBundle {
 	productDB, err := initDBSqlt(c.Product.MasterDBConnection, c.Product.SlaveDBConnection)
 	if err != nil {
 		log.Fatalf("db.Product not available with config %v", err)
 	}
 
-	DB := DBBundle{
+	DB := global.DBBundle{
 		productDB,
 	}
 

@@ -1,8 +1,12 @@
 package product
 
-import "time"
+import (
+	"time"
 
-type product struct {
+	"github.com/tokopedia/sqlt"
+)
+
+type Product struct {
 	ID         int64     `json:"product_id"`
 	Name       string    `json:"product_name"`
 	Status     int       `json:"status"`
@@ -12,4 +16,9 @@ type product struct {
 	CreateTime time.Time `json:"create_time"`
 	ImgUrl     string    `json:"img_url"`
 	Domain     string    `json:"domain_name"`
+}
+
+type productRepo struct {
+	DB             *sqlt.DB
+	queryDBTimeout time.Duration
 }

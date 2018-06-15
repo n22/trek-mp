@@ -1,10 +1,10 @@
-package product
+package app
 
 import (
 	"strconv"
 
+	"github.com/5112100070/trek-mp/src/app/product"
 	"github.com/5112100070/trek-mp/src/global"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,6 +21,8 @@ func GetDetailProduct(c *gin.Context) {
 }
 
 func SaveNewProduct(c *gin.Context) {
+	productService := global.GetServiceProduct()
+
 	name := c.PostForm("name")
 	priceBuy, errParse := strconv.ParseInt(c.PostForm("price_to_buy"), 10, 64)
 	if errParse != nil {
@@ -36,8 +38,8 @@ func SaveNewProduct(c *gin.Context) {
 		return
 	}
 
-	p := initProduct(name, priceBuy, priceSell)
-	errSave := p.SaveNewData()
+	p := product.InitNewProduct(name, priceBuy, priceSell)
+	errSave := productService.Save(p)
 	if errSave != nil {
 		global.Error.Println(errSave)
 		global.InternalServerErrorResponse(c, nil)

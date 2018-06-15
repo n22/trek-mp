@@ -1,9 +1,5 @@
 package conf
 
-import (
-	"github.com/tokopedia/sqlt"
-)
-
 type Config struct {
 	DBConfig DBConfig
 	Product  ProductConfig
@@ -19,9 +15,4 @@ type DBConfig struct {
 type ProductConfig struct {
 	SlaveDBConnection  string
 	MasterDBConnection string
-}
-
-// DBBundle : Data type of DB
-type DBBundle struct {
-	Product *sqlt.DB
 }

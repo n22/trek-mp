@@ -34,6 +34,8 @@ func init() {
 
 	global.DB = conf.InitDB(config)
 	global.InitDefaultQueryTimeOut(config.DBConfig.QueryTimeout)
+
+	product.InitProductService(global.DB.Product)
 }
 
 func main() {
