@@ -48,13 +48,55 @@ func (repo productRepo) Save(p Product) error {
 	return nil
 }
 
-func (repo productRepo) GetProduct() {
+func (repo productRepo) GetProduct(productID int64) (Product, error) {
+	var p Product
+	query := `
+		SELECT 
+			product_id,
+			product_name,
+			price_to_buy,
+			price_to_sell,
+			status,
+			type,
+			create_time,
+			img_url,
+			domain_name
+		FROM
+			ws_product
+		WHERE
+			product_id=?
+		LIMIT 1
+	`
 
+	ctx, cancel := context.WithTimeout(context.TODO(), repo.queryDBTimeout)
+	defer cancel()
+
+	selectQuery, errPrepare := repo.DB.PreparexContext(ctx, query)
+	if errPrepare != nil {
+		return p, errPrepare
+	}
+
+	var rawTime time.Time
+	errScan := selectQuery.QueryRowxContext(ctx, productID).Scan(&p.ID,
+		&p.Name,
+		&p.PriceBuy,
+		&p.PriceSell,
+		&p.Status,
+		&p.Type,
+		&rawTime,
+		&p.ImgUrl,
+		&p.Domain)
+	if errScan != nil {
+		return p, errScan
+	}
+	p.CreateTime = utils.ConvertTimeWIB(rawTime)
+
+	return p, nil
 }
 
 func (repo productRepo) GetListProduct(start int, rows int, sortType string) ([]Product, error) {
 	if start < 0 || rows <= 0 {
-		start = 1
+		start = 0
 		rows = 10
 	}
 	if sort(sortType) != SORT_ASC && sort(sortType) != SORT_DESC {

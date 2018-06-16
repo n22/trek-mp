@@ -44,9 +44,23 @@ func GetProductPage(c *gin.Context) {
 }
 
 func GetDetailProduct(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "pong",
-	})
+	productService := global.GetServiceProduct()
+
+	productID, errParse := strconv.ParseInt(c.Query("product_id"), 10, 64)
+	if errParse != nil {
+		global.Error.Println(errParse)
+		global.BadRequestResponse(c, nil)
+		return
+	}
+
+	p, err := productService.GetProduct(productID)
+	if err != nil {
+		global.Error.Println(err)
+		global.InternalServerErrorResponse(c, nil)
+		return
+	}
+
+	global.OKResponse(c, p)
 }
 
 func SaveNewProduct(c *gin.Context) {
