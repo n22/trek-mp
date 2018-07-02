@@ -15,6 +15,10 @@ func Ping(c *gin.Context) {
 }
 
 func GetProductPage(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers, Content-Type")
+
 	productService := global.GetServiceProduct()
 
 	start, errParse := strconv.Atoi(c.DefaultQuery("start", "0"))
@@ -44,6 +48,10 @@ func GetProductPage(c *gin.Context) {
 }
 
 func GetDetailProduct(c *gin.Context) {
+	c.Header("Content-Type", "application/json")
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Headers", "access-control-allow-origin, access-control-allow-headers, Content-Type")
+
 	productService := global.GetServiceProduct()
 
 	productID, errParse := strconv.ParseInt(c.Query("product_id"), 10, 64)

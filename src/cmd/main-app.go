@@ -44,6 +44,9 @@ func main() {
 	r.GET("/product", app.GetProductPage)
 	r.GET("/product/detail", app.GetDetailProduct)
 
+	r.OPTIONS("/product", app.GetProductPage)
+	r.OPTIONS("/product/detail", app.GetDetailProduct)
+
 	r.POST("/product/save", app.SaveNewProduct)
 	r.Run(":3000") // listen and serve on 0.0.0.0:8080
 }

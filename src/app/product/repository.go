@@ -90,6 +90,8 @@ func (repo productRepo) GetProduct(productID int64) (Product, error) {
 		return p, errScan
 	}
 	p.CreateTime = utils.ConvertTimeWIB(rawTime)
+	p.SetPriceToRent()
+	p.SetPriceToBuy()
 
 	return p, nil
 }
@@ -154,6 +156,8 @@ func (repo productRepo) GetListProduct(start int, rows int, sortType string) ([]
 		}
 
 		p.CreateTime = utils.ConvertTimeWIB(rawTime)
+		p.SetPriceToRent()
+		p.SetPriceToBuy()
 		result = append(result, p)
 	}
 

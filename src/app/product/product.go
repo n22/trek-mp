@@ -12,3 +12,11 @@ func InitNewProduct(name string, priceToBuy int64, priceToSell int64) Product {
 		CreateTime: utils.GetTimeWIB(),
 	}
 }
+
+func (p *Product) SetPriceToRent() {
+	p.PriceToRentStr = utils.IntToRp(p.PriceSell)
+}
+
+func (p *Product) SetPriceToBuy() {
+	p.PriceToBuyStr = utils.IntToRp(p.PriceBuy)
+}
