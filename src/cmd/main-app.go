@@ -15,7 +15,7 @@ func init() {
 	// init error logging
 	global.InitLogError(os.Stderr)
 
-	cfgenv := os.Getenv("TKPENV")
+	cfgenv := os.Getenv("TREKENV")
 	network := os.Getenv("NETWORK")
 	if cfgenv == "" {
 		log.Println("[trek-mp] No environment set. Using 'development'.")
