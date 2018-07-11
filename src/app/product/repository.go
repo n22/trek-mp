@@ -24,6 +24,9 @@ func (repo productRepo) Save(p Product) error {
 			type,
 			price_to_buy,
 			price_to_sell,
+			price_to_rent_daily,
+			price_to_rent_weekly,
+			price_to_rent_monthly,
 			create_time,
 			img_url,
 			domain_name)
@@ -40,7 +43,7 @@ func (repo productRepo) Save(p Product) error {
 	}
 	defer insertProduct.Close()
 
-	_, errInsert := insertProduct.ExecContext(ctx, p.Name, p.Status, p.Type, p.PriceBuy, p.PriceSell, p.CreateTime, p.ImgUrl, p.Domain)
+	_, errInsert := insertProduct.ExecContext(ctx, p.Name, p.Status, p.Type, p.PriceBuy, p.PriceSell, p.PriceRentDaily, p.PriceRentWeekly, p.PriceRentMonthly, p.CreateTime, p.ImgUrl, p.Domain)
 	if errInsert != nil {
 		return errInsert
 	}
@@ -56,6 +59,9 @@ func (repo productRepo) GetProduct(productID int64) (Product, error) {
 			product_name,
 			price_to_buy,
 			price_to_sell,
+			price_to_rent_daily,
+			price_to_rent_weekly,
+			price_to_rent_monthly,			
 			status,
 			type,
 			create_time,
@@ -81,6 +87,9 @@ func (repo productRepo) GetProduct(productID int64) (Product, error) {
 		&p.Name,
 		&p.PriceBuy,
 		&p.PriceSell,
+		&p.PriceRentDaily,
+		&p.PriceRentWeekly,
+		&p.PriceRentMonthly,
 		&p.Status,
 		&p.Type,
 		&rawTime,

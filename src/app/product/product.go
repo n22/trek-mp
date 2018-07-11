@@ -15,6 +15,9 @@ func InitNewProduct(name string, priceToBuy int64, priceToSell int64) Product {
 
 func (p *Product) SetPriceToRent() {
 	p.PriceToRentStr = utils.IntToRp(p.PriceSell)
+	p.PriceRentDailyStr = utils.IntToRp(p.PriceRentDaily)
+	p.PriceRentWeeklyStr = utils.IntToRp(p.PriceRentWeekly)
+	p.PriceRentMonthlyStr = utils.IntToRp(p.PriceRentMonthly)
 }
 
 func (p *Product) SetPriceToBuy() {
