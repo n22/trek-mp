@@ -16,6 +16,10 @@ func ConvertTimeWIB(t time.Time) time.Time {
 }
 
 func IntToRp(val int64) string {
+	if val == 0 {
+		return ""
+	}
+
 	var result string
 	var counter int
 	strVal := fmt.Sprintf("%d", val)
