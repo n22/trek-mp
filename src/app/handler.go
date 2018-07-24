@@ -54,14 +54,16 @@ func GetDetailProduct(c *gin.Context) {
 
 	productService := global.GetServiceProduct()
 
-	productID, errParse := strconv.ParseInt(c.Query("product_id"), 10, 64)
-	if errParse != nil {
-		global.Error.Println(errParse)
-		global.BadRequestResponse(c, nil)
-		return
-	}
+	productName := c.Query("product_name")
 
-	p, err := productService.GetProduct(productID)
+	// productID, errParse := strconv.ParseInt(c.Query("product_name"), 10, 64)
+	// if errParse != nil {
+	// 	global.Error.Println(errParse)
+	// 	global.BadRequestResponse(c, nil)
+	// 	return
+	// }
+
+	p, err := productService.GetProductByName(productName)
 	if err != nil {
 		global.Error.Println(err)
 		global.InternalServerErrorResponse(c, nil)

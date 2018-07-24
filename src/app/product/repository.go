@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"time"
 
@@ -96,6 +97,60 @@ func (repo productRepo) GetProduct(productID int64) (Product, error) {
 		&p.ImgUrl,
 		&p.Domain)
 	if errScan != nil {
+		return p, errScan
+	}
+	p.CreateTime = utils.ConvertTimeWIB(rawTime)
+	p.SetPriceToRent()
+	p.SetPriceToBuy()
+
+	return p, nil
+}
+
+func (repo productRepo) GetProductByName(productName string) (Product, error) {
+	var p Product
+	query := `
+		SELECT 
+			product_id,
+			product_name,
+			price_to_buy,
+			price_to_sell,
+			price_to_rent_daily,
+			price_to_rent_weekly,
+			price_to_rent_monthly,			
+			status,
+			type,
+			create_time,
+			img_url,
+			domain_name
+		FROM
+			ws_product
+		WHERE
+			product_name=?
+		LIMIT 1
+	`
+
+	ctx, cancel := context.WithTimeout(context.TODO(), repo.queryDBTimeout)
+	defer cancel()
+
+	selectQuery, errPrepare := repo.DB.PreparexContext(ctx, query)
+	if errPrepare != nil {
+		return p, errPrepare
+	}
+
+	var rawTime time.Time
+	errScan := selectQuery.QueryRowxContext(ctx, productName).Scan(&p.ID,
+		&p.Name,
+		&p.PriceBuy,
+		&p.PriceSell,
+		&p.PriceRentDaily,
+		&p.PriceRentWeekly,
+		&p.PriceRentMonthly,
+		&p.Status,
+		&p.Type,
+		&rawTime,
+		&p.ImgUrl,
+		&p.Domain)
+	if errScan != nil && errScan != sql.ErrNoRows {
 		return p, errScan
 	}
 	p.CreateTime = utils.ConvertTimeWIB(rawTime)
