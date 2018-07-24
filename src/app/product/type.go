@@ -25,7 +25,7 @@ type Product struct {
 	PriceRentMonthlyStr string    `json:"price_rent_monthly"`
 	CreateTime          time.Time `json:"create_time"`
 	ImgUrl              string    `json:"img_url"`
-	Domain              string    `json:"domain_name"`
+	Path                string    `json:"path"`
 	PriceBuy            int64     `json:"-,omitempty"`
 	PriceSell           int64     `json:"-,omitempty"`
 	PriceRentDaily      int64     `json:"-,omitempty"`

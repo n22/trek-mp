@@ -30,7 +30,7 @@ func (repo productRepo) Save(p Product) error {
 			price_to_rent_monthly,
 			create_time,
 			img_url,
-			domain_name)
+			path)
 		VALUES(?, ?, ?, ?, ?, ?, ?, ?)
 		`
 
@@ -44,7 +44,7 @@ func (repo productRepo) Save(p Product) error {
 	}
 	defer insertProduct.Close()
 
-	_, errInsert := insertProduct.ExecContext(ctx, p.Name, p.Status, p.Type, p.PriceBuy, p.PriceSell, p.PriceRentDaily, p.PriceRentWeekly, p.PriceRentMonthly, p.CreateTime, p.ImgUrl, p.Domain)
+	_, errInsert := insertProduct.ExecContext(ctx, p.Name, p.Status, p.Type, p.PriceBuy, p.PriceSell, p.PriceRentDaily, p.PriceRentWeekly, p.PriceRentMonthly, p.CreateTime, p.ImgUrl, p.Path)
 	if errInsert != nil {
 		return errInsert
 	}
@@ -67,7 +67,7 @@ func (repo productRepo) GetProduct(productID int64) (Product, error) {
 			type,
 			create_time,
 			img_url,
-			domain_name
+			path
 		FROM
 			ws_product
 		WHERE
@@ -95,7 +95,7 @@ func (repo productRepo) GetProduct(productID int64) (Product, error) {
 		&p.Type,
 		&rawTime,
 		&p.ImgUrl,
-		&p.Domain)
+		&p.Path)
 	if errScan != nil {
 		return p, errScan
 	}
@@ -121,7 +121,7 @@ func (repo productRepo) GetProductByName(productName string) (Product, error) {
 			type,
 			create_time,
 			img_url,
-			domain_name
+			path
 		FROM
 			ws_product
 		WHERE
@@ -149,7 +149,61 @@ func (repo productRepo) GetProductByName(productName string) (Product, error) {
 		&p.Type,
 		&rawTime,
 		&p.ImgUrl,
-		&p.Domain)
+		&p.Path)
+	if errScan != nil && errScan != sql.ErrNoRows {
+		return p, errScan
+	}
+	p.CreateTime = utils.ConvertTimeWIB(rawTime)
+	p.SetPriceToRent()
+	p.SetPriceToBuy()
+
+	return p, nil
+}
+
+func (repo productRepo) GetProductByPath(path string) (Product, error) {
+	var p Product
+	query := `
+		SELECT 
+			product_id,
+			product_name,
+			price_to_buy,
+			price_to_sell,
+			price_to_rent_daily,
+			price_to_rent_weekly,
+			price_to_rent_monthly,			
+			status,
+			type,
+			create_time,
+			img_url,
+			path
+		FROM
+			ws_product
+		WHERE
+			path=?
+		LIMIT 1
+	`
+
+	ctx, cancel := context.WithTimeout(context.TODO(), repo.queryDBTimeout)
+	defer cancel()
+
+	selectQuery, errPrepare := repo.DB.PreparexContext(ctx, query)
+	if errPrepare != nil {
+		return p, errPrepare
+	}
+
+	var rawTime time.Time
+	errScan := selectQuery.QueryRowxContext(ctx, path).Scan(&p.ID,
+		&p.Name,
+		&p.PriceBuy,
+		&p.PriceSell,
+		&p.PriceRentDaily,
+		&p.PriceRentWeekly,
+		&p.PriceRentMonthly,
+		&p.Status,
+		&p.Type,
+		&rawTime,
+		&p.ImgUrl,
+		&p.Path)
 	if errScan != nil && errScan != sql.ErrNoRows {
 		return p, errScan
 	}
@@ -179,7 +233,7 @@ func (repo productRepo) GetListProduct(start int, rows int, sortType string) ([]
 			type,
 			create_time,
 			img_url,
-			domain_name
+			path
 		FROM ws_product
 		WHERE
 			status = 1 AND
@@ -214,7 +268,7 @@ func (repo productRepo) GetListProduct(start int, rows int, sortType string) ([]
 			&p.Type,
 			&rawTime,
 			&p.ImgUrl,
-			&p.Domain)
+			&p.Path)
 		if errScan != nil {
 			return nil, errScan
 		}

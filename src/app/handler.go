@@ -54,7 +54,7 @@ func GetDetailProduct(c *gin.Context) {
 
 	productService := global.GetServiceProduct()
 
-	productName := c.Query("product_name")
+	productPath := c.Query("path")
 
 	// productID, errParse := strconv.ParseInt(c.Query("product_name"), 10, 64)
 	// if errParse != nil {
@@ -63,7 +63,7 @@ func GetDetailProduct(c *gin.Context) {
 	// 	return
 	// }
 
-	p, err := productService.GetProductByName(productName)
+	p, err := productService.GetProductByPath(productPath)
 	if err != nil {
 		global.Error.Println(err)
 		global.InternalServerErrorResponse(c, nil)
