@@ -5,6 +5,7 @@ import (
 
 	"github.com/5112100070/trek-mp/src/app/product"
 	"github.com/5112100070/trek-mp/src/global"
+	"github.com/5112100070/trek-mp/src/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -100,4 +101,36 @@ func SaveNewProduct(c *gin.Context) {
 	}
 
 	global.CreatedResponse(c, p)
+}
+
+func MakeLogin(c *gin.Context) {
+	c.Writer.Header().Set("Content-Type", "application/json")
+	c.Writer.Header().Set("Access-Control-Allow-Origin", c.Request.Header.Get("Origin"))
+	c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+
+	username := c.PostForm("username")
+	password := c.PostForm("secret")
+
+	userService := global.GetServiceUser()
+
+	dataResponse := map[string]interface{}{
+		"is_success": false,
+	}
+
+	result, nekot, err := userService.MakeLogin(username, password)
+	if err != nil {
+		global.Error.Println(err)
+		global.InternalServerErrorResponse(c, dataResponse)
+		return
+	}
+
+	if result {
+		global.OKResponse(c, map[string]interface{}{
+			"env":        global.UserCookie[utils.GetEnv()],
+			"nekot":      nekot,
+			"is_success": result,
+		})
+	} else {
+		global.UnAuthorizeResponse(c, dataResponse)
+	}
 }

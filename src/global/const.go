@@ -12,3 +12,12 @@ var DB DBBundle
 
 //All Repository Access
 var Services RepoBundle
+
+//Detail Server
+var DetailServer ServerConfig
+
+var UserCookie = map[string]string{
+	"production":  "_TREK_",
+	"staging":     "_TREK_TEST_",
+	"development": "_TREK_DEV_",
+}

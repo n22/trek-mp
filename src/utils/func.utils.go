@@ -1,9 +1,24 @@
 package utils
 
 import (
+	"crypto/md5"
 	"fmt"
+	"os"
 	"time"
 )
+
+func GetEnv() string {
+	cfgenv := os.Getenv("TREKENV")
+	if cfgenv == "" {
+		cfgenv = "development"
+	}
+	return cfgenv
+}
+
+func GenerateMD5(val string) string {
+	data := []byte(val)
+	return fmt.Sprintf("%x", md5.Sum(data))
+}
 
 func GetTimeWIB() time.Time {
 	loc, _ := time.LoadLocation("Asia/Jakarta")

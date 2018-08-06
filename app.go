@@ -15,7 +15,7 @@ func init() {
 	// init error logging
 	global.InitLogError(os.Stderr)
 
-	cfgenv := os.Getenv("TKPENV")
+	cfgenv := os.Getenv("TREKENV")
 	network := os.Getenv("NETWORK")
 	if cfgenv == "" {
 		log.Println("[trek-mp] No environment set. Using 'development'.")
@@ -33,6 +33,7 @@ func init() {
 	}
 
 	db := conf.InitDB(config)
+	conf.InitGlobalVariable(config)
 	queryTimeout := global.InitDefaultQueryTimeOut(config.DBConfig.QueryTimeout)
 	global.InitRepoBundle(db, queryTimeout)
 }
@@ -48,5 +49,8 @@ func main() {
 	r.OPTIONS("/product/detail", app.GetDetailProduct)
 
 	r.POST("/product/save", app.SaveNewProduct)
-	r.Run(":3000") // listen and serve on 0.0.0.0:8080
+
+	r.POST("/make-login", app.MakeLogin)
+
+	r.Run(global.DetailServer.AppPort) // listen and serve on 0.0.0.0:8080
 }
