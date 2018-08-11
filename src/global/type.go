@@ -3,6 +3,7 @@ package global
 import (
 	"github.com/5112100070/trek-mp/src/app/product"
 	"github.com/5112100070/trek-mp/src/app/user"
+	redigo "github.com/5112100070/trek-mp/src/global/redis"
 	"github.com/tokopedia/sqlt"
 )
 
@@ -13,8 +14,9 @@ type ServerConfig struct {
 
 // DBBundle : Data type of DB
 type DBBundle struct {
-	Product *sqlt.DB
-	User    *sqlt.DB
+	Product   *sqlt.DB
+	User      *sqlt.DB
+	RedisUser redigo.Redis
 }
 
 type RepoBundle struct {

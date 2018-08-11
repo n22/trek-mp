@@ -3,10 +3,15 @@ package user
 import (
 	"time"
 
+	redigo "github.com/5112100070/trek-mp/src/global/redis"
 	"github.com/tokopedia/sqlt"
 )
 
 const (
+	redis_key_cookie = "cookie:c_"
+	redis_key_user   = "class:user:u_"
+	redis_timeout    = time.Duration((6 * time.Hour))
+
 	USER_STATUS_ACTIVE  = 1
 	USER_STATUS_DELETED = 0
 )
@@ -25,5 +30,6 @@ type User struct {
 
 type userRepo struct {
 	DB             *sqlt.DB
+	redis          redigo.Redis
 	queryDBTimeout time.Duration
 }

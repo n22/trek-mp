@@ -6,13 +6,15 @@ import (
 	"fmt"
 	"time"
 
+	redigo "github.com/5112100070/trek-mp/src/global/redis"
 	"github.com/5112100070/trek-mp/src/utils"
 	"github.com/tokopedia/sqlt"
 )
 
-func InitUserRepo(userDB *sqlt.DB, queryTimeout time.Duration) *userRepo {
+func InitUserRepo(userDB *sqlt.DB, userRedis redigo.Redis, queryTimeout time.Duration) *userRepo {
 	return &userRepo{
 		DB:             userDB,
+		redis:          userRedis,
 		queryDBTimeout: queryTimeout,
 	}
 }
@@ -65,11 +67,14 @@ func (repo userRepo) GetUser(userID int64) (User, error) {
 }
 
 func (repo userRepo) MakeLogin(username string, password string) (bool, string, error) {
-	var userID, status int64
+	var user User
+	var status int64
 	var nekot string
 	query := `
 		SELECT
 			user_id,
+			fullname,
+			type,
 			status
 		FROM
 			ws_user
@@ -86,14 +91,24 @@ func (repo userRepo) MakeLogin(username string, password string) (bool, string, 
 		return false, nekot, errPrepare
 	}
 
-	errScan := selectQuery.QueryRowxContext(ctx, username, password).Scan(&userID, &status)
+	errScan := selectQuery.QueryRowxContext(ctx, username, password).
+		Scan(&user.ID,
+			&user.FullName,
+			&user.Type,
+			&status)
 	if errScan != nil && errScan != sql.ErrNoRows {
 		return false, nekot, errScan
 	}
 
-	if userID != 0 && status == USER_STATUS_ACTIVE {
-		return true, utils.GenerateMD5(fmt.Sprintf("%v%v", userID, time.Now())), nil
+	if user.ID != 0 && status == USER_STATUS_ACTIVE {
+		nekot = utils.GenerateMD5(fmt.Sprintf("%v%v", user.ID, time.Now()))
+		repo.setUserByCookieInRedis(nekot, user)
+		return true, nekot, nil
 	} else {
 		return false, nekot, nil
 	}
+}
+
+func (repo userRepo) GetUserBySession(cookie string) (User, error) {
+	return repo.getUserByCookieInRedis(cookie)
 }

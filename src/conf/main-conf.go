@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/5112100070/trek-mp/src/global"
+	redigo "github.com/5112100070/trek-mp/src/global/redis"
 )
 
 func InitDB(c Config) global.DBBundle {
@@ -19,9 +20,12 @@ func InitDB(c Config) global.DBBundle {
 		log.Fatalf("db.User not available with config %v", err)
 	}
 
+	redisUser := redigo.New(c.User.Redis, &c.RedigoDefault)
+
 	DB := global.DBBundle{
-		productDB,
-		userDB,
+		Product:   productDB,
+		User:      userDB,
+		RedisUser: redisUser,
 	}
 
 	DB.Product.SetMaxOpenConnections(c.DBConfig.DBMaxConn)
@@ -44,6 +48,11 @@ func InitDB(c Config) global.DBBundle {
 		log.Fatal("User DB is not accessible, please check config")
 	}
 	defer rows.Close()
+
+	_, err = redisUser.PING()
+	if err != nil {
+		log.Fatal("Redis User data not accessible, please check config")
+	}
 
 	return DB
 }

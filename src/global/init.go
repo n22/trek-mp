@@ -20,6 +20,6 @@ func InitDefaultQueryTimeOut(queryTimeout int64) time.Duration {
 func InitRepoBundle(dbBundle DBBundle, queryTimeout time.Duration) {
 	Services = RepoBundle{
 		Product: product.InitProductRepo(dbBundle.Product, queryTimeout),
-		User:    user.InitUserRepo(dbBundle.User, queryTimeout),
+		User:    user.InitUserRepo(dbBundle.User, dbBundle.RedisUser, queryTimeout),
 	}
 }

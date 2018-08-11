@@ -1,12 +1,16 @@
 package conf
 
-import "github.com/5112100070/trek-mp/src/global"
+import (
+	"github.com/5112100070/trek-mp/src/global"
+	redigo "github.com/5112100070/trek-mp/src/global/redis"
+)
 
 type Config struct {
-	DBConfig DBConfig
-	Server   global.ServerConfig
-	Product  ProductConfig
-	User     UserConfig
+	DBConfig      DBConfig
+	Server        global.ServerConfig
+	Product       ProductConfig
+	User          UserConfig
+	RedigoDefault redigo.RedisConfig
 }
 
 type DBConfig struct {
@@ -22,6 +26,7 @@ type ProductConfig struct {
 }
 
 type UserConfig struct {
+	Redis              string
 	SlaveDBConnection  string
 	MasterDBConnection string
 }
