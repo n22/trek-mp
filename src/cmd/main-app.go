@@ -33,6 +33,7 @@ func init() {
 	}
 
 	db := conf.InitDB(config)
+	conf.InitGlobalVariable(config)
 	queryTimeout := global.InitDefaultQueryTimeOut(config.DBConfig.QueryTimeout)
 	global.InitRepoBundle(db, queryTimeout)
 }
@@ -43,10 +44,15 @@ func main() {
 	r.GET("/ping", app.Ping)
 	r.GET("/product", app.GetProductPage)
 	r.GET("/product/detail", app.GetDetailProduct)
+	r.GET("/product/detail-by-id", app.GetDetailProductById)
 
 	r.OPTIONS("/product", app.GetProductPage)
 	r.OPTIONS("/product/detail", app.GetDetailProduct)
+	r.OPTIONS("/product/detail-by-id", app.GetDetailProductById)
 
 	r.POST("/product/save", app.SaveNewProduct)
-	r.Run(":3000") // listen and serve on 0.0.0.0:8080
+
+	r.POST("/make-login", app.MakeLogin)
+
+	r.Run(global.DetailServer.AppPort) // listen and serve on 0.0.0.0:8080
 }

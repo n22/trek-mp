@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/5112100070/trek-mp/src/app/product"
+	"github.com/5112100070/trek-mp/src/app/user"
 )
 
 func InitLogError(errorHandle io.Writer) {
@@ -19,5 +20,6 @@ func InitDefaultQueryTimeOut(queryTimeout int64) time.Duration {
 func InitRepoBundle(dbBundle DBBundle, queryTimeout time.Duration) {
 	Services = RepoBundle{
 		Product: product.InitProductRepo(dbBundle.Product, queryTimeout),
+		User:    user.InitUserRepo(dbBundle.User, dbBundle.RedisUser, queryTimeout),
 	}
 }
