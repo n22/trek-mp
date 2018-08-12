@@ -44,9 +44,11 @@ func main() {
 	r.GET("/ping", app.Ping)
 	r.GET("/product", app.GetProductPage)
 	r.GET("/product/detail", app.GetDetailProduct)
+	r.GET("/product/detail-by-id", app.GetDetailProductById)
 
 	r.OPTIONS("/product", app.GetProductPage)
 	r.OPTIONS("/product/detail", app.GetDetailProduct)
+	r.OPTIONS("/product/detail-by-id", app.GetDetailProductById)
 
 	r.POST("/product/save", app.SaveNewProduct)
 

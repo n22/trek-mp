@@ -52,6 +52,42 @@ func (repo productRepo) Save(p Product) error {
 	return nil
 }
 
+func (repo productRepo) Update(p Product) error {
+	query := `
+		UPDATE 
+				ws_product 
+		SET
+				product_name = ?,
+				status = ?,
+				type = ?,
+				price_to_sell = ?,
+				price_to_rent_daily = ?,
+				price_to_rent_weekly = ?,
+				price_to_rent_monthly = ?,
+				img_url = ?,
+				path = ?
+		WHERE
+				product_id = ?
+		`
+
+	ctx, cancel := context.WithTimeout(context.TODO(), repo.queryDBTimeout)
+	defer cancel()
+
+	dbProduct := repo.DB
+	insertProduct, errPrepared := dbProduct.PreparexContext(ctx, query)
+	if errPrepared != nil {
+		return errPrepared
+	}
+	defer insertProduct.Close()
+
+	_, errInsert := insertProduct.ExecContext(ctx, p.Name, p.Status, p.Type, p.PriceSell, p.PriceRentDaily, p.PriceRentWeekly, p.PriceRentMonthly, p.ImgUrl, p.Path, p.ID)
+	if errInsert != nil {
+		return errInsert
+	}
+
+	return nil
+}
+
 func (repo productRepo) GetProduct(productID int64) (Product, error) {
 	var p Product
 	query := `

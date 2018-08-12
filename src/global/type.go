@@ -26,6 +26,7 @@ type RepoBundle struct {
 
 type ProductService interface {
 	Save(p product.Product) error
+	Update(p product.Product) error
 	GetProduct(productID int64) (product.Product, error)
 	GetProductByName(productName string) (product.Product, error)
 	GetProductByPath(path string) (product.Product, error)
